@@ -5,13 +5,14 @@ Authors: Dave Fisher, David Mutchler, Vibha Alangar,
          their colleagues, and PUT_YOUR_NAME_HERE.
 """  # TODO: 1. PUT YOUR NAME IN THE ABOVE LINE.
 
+import simple_rosebotics as rb
+
 
 # ------------------------------------------------------------------------------
-# TODO: 2.
+# TODO: 2.  This is an   ** OPTIONAL **   exercise.
 #   Using the DOT trick, add code to  make_sounds  to make the robot
 #   make sounds in various ways:  Beep, Tone, Speech, Song.
 # ------------------------------------------------------------------------------
-
 def main():
     fun_song = [(392, 350, 100), (392, 350, 100), (392, 350, 100),
                 (311.1, 250, 100), (466.2, 25, 100), (392, 350, 100),

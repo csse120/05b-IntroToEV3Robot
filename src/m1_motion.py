@@ -5,14 +5,14 @@ Authors: Dave Fisher, David Mutchler, Vibha Alangar,
 their colleagues, and PUT_YOUR_NAME_HERE.
 """  # TODO: 1. PUT YOUR NAME IN THE ABOVE LINE.
 
-# ------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # TODO: 2.
 #   Follow along with the lecture to run this program:
 #    - Using SSH from your computer
 #   When you have successfully run this program, change this _TODO_ to DONE.
-# ------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
-import rosebotics as rb
+import simple_rosebotics as rb
 import time
 
 def main():
@@ -21,16 +21,16 @@ def main():
 
 
 def go_two_seconds():
-    # --------------------------------------------------------------------------
+    # -------------------------------------------------------------------------
     # TODO: 3.
     #   Make the robot move, by using this pattern:
-    #      1. Turn on (start) the wheel motors.
-    #      2.     time.sleep(2)  # Pause here, let other processes run for 2 seconds
-    #      3. Turn off (brake or coast) the wheel motors.
+    #    - Turn on (start) the wheel motors.
+    #    - time.sleep(2)  # Pause here, let other processes run for 2 seconds
+    #    - Turn off (brake or coast) the wheel motors.
     #
     # Use the DOT trick to figure out how to start, brake and coast motors.
-    # --------------------------------------------------------------------------
-    left_motor = rb.LargeMotor(rb.Plug("B"))  # Constructs a Motor for the left wheel
+    # -------------------------------------------------------------------------
+    left_motor = rb.LargeMotor(rb.Plug("B"))  # Constructs Motor for left wheel
     left_motor.start()
     time.sleep(2)
     left_motor.brake()
