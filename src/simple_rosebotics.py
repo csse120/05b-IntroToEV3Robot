@@ -1,194 +1,196 @@
 """
-The python-ev3dev library tailored for Rose-Hulman.
+A simple version of part of the RoseBot class that you will implement
+in your Capstone project.
 """
 
 import ev3dev.ev3 as ev3
+import time
+import math
 
 
 ###############################################################################
-# Classes for making the EV3 Robot move, via motors for wheels, arms, etc.
+#    RoseBot class.
+#
+# NOTE TO STUDENTS:
+#   You should construct a RoseBot for the Snatch3r robot.
+#   Do ** NOT ** construct any instances of any other classes in this module,
+#   since a RoseBot constructs instances of all the sub-systems that provide
+#   ALL of the functionality available to a Snatch3r robot.
+#
+#   Use those sub-systems (and their instance variables)
+#   to make the RoseBot (and its associated Snatch3r robot) do things.
 ###############################################################################
-
-class StopAction(object):
-    COAST = "coast"
-    BRAKE = "brake"
-    HOLD = "hold"
-
-
-class LargeMotor(object):
-    def __init__(self, output_plug, speed=800, stop_action=StopAction.BRAKE):
-        self._motor = ev3.LargeMotor(output_plug.port)
-        self.speed_percent = speed  # -100 to 100: a percent of fastest speed
-        self.how_to_stop = stop_action
-
-    def start(self, speed=None):
-        if speed is None:
-            self._motor.run_forever(speed_sp=self.speed_percent)
-        else:
-            self._motor.run_forever(speed_sp=self.speed_percent)
-
-    def stop(self, stop_action=None):
-        if stop_action is None:
-            self._motor.stop(stop_action=self.how_to_stop)
-        else:
-            self._motor.stop(stop_action=stop_action)
-
-    def brake(self):
-        self._motor.stop(stop_action=StopAction.BRAKE)
-
-    def coast(self):
-        self._motor.stop(stop_action=StopAction.COAST)
-
-    def hold(self):
-        self._motor.stop(stop_action=StopAction.HOLD)
-
+class RoseBot(object):
+    def __init__(self):
+        # Use these instance variables
+        self.drive_system = DriveSystem()
+        self.sound_system = SoundSystem()
 
 ###############################################################################
-# Classes for making the EV3 Robot make sounds.
+#    DriveSystem
 ###############################################################################
-
-class Sound(object):
-    # DAVID_TODO: Implement this.
-    pass
-
-
-class Beep(Sound):
-    def __init__(self, blocked=True):
-        """
-        Store a "beep" Sound with the given arguments.
-        """  # DAVID_TODO: Allow arguments per Sound.beep documentation.
-        self.blocked = blocked
-
-    def play(self, blocked=None):
-        """
-        Play the Beep.
-        If blocked is True, wait for the Beep to finish before continuing.
-          :type blocked: bool
-        """
-        if blocked is None:
-            blocked = self.blocked
-        subprocess = ev3.Sound.beep()
-        if blocked:
-            subprocess.wait()
-
-
-class Tone(Sound):
-    """ A Sound with a frequency and duration. """
-
-    def __init__(self, frequency, duration):
-        """
-        Store a "tone" Sound with the given frequency (in Hz) and duration
-        (in milliseconds).  Use the  play  method to produce the Tone.
-
-        The EV3 speaker can produce frequencies between about 32 and 32,000 Hz.
-        Duration can be arbitrarily large.
-        Frequencies above 800 or so are rather obnoxious,
-        as are durations above 400 or so.
-
-          :type frequency: float
-          :type duration:  float
-        """
-        self.frequency = frequency
-        self.duration = duration
-
-    def play(self, blocked=True):
-        """
-        Play the Beep.
-        If blocked is True, wait for the Tone to finish before continuing.
-          :type blocked: bool
-        """
-        subprocess = ev3.Sound.tone(self.frequency, self.duration)
-        if blocked:
-            subprocess.wait()
-
-
-class Song(Sound):
-    """ A sequence of Tones (with optional pauses between them). """
-
-    def __init__(self, tones):
-        """
-        Store a sequence of tuples, where each tuple contains:
-          - a frequency (in Hz)
-          - a duration (in milliseconds)
-          - [optionally] a duration (in milliseconds)
-              to pause before playing the next item in the sequence
-
-        Use the  play  method to play the Song as a sequence of Tones.
-
-        The EV3 speaker can produce frequencies between about 32 and 32,000 Hz.
-        Duration can be arbitrarily large.
-        Frequencies above 800 or so are rather obnoxious,
-        as are durations above 400 or so.
-
-          :type tones: list[tuple]
-        """
-        self.tones = tones
-
-    def play(self, blocked=True):
-        """
-        Play the Song.
-        If blocked is True, wait for the Tone to finish before continuing.
-          :type blocked: bool
-        """
-        subprocess = ev3.Sound.tone(self.tones)
-        if blocked:
-            subprocess.wait()
-
-
-class Speech(Sound):
-    """ Text that can be spoken by using the  speak (aka play)  method. """
-
-    def __init__(self, text):
-        """
-        Store text to be played by the  speak  method.
-          :type text: str
-        """
-        self.text = text
-
-    def speak(self, *args):
-        """ Speak the text.  Synonym for play. """
-        self.play(*args)
-
-    def play(self, blocked=True):
-        """
-        Play (speak) the Text.
-        If blocked is True, wait for the Speech to finish before continuing.
-          :type blocked: bool
-        """
-        subprocess = ev3.Sound.speak(self.text)
-        if blocked:
-            subprocess.wait()
-
+class DriveSystem(object):
+    def __init__(self):
+        """ Constructs two Motors (for the left and right wheels). """
+        self.left_motor = Motor('B')
+        self.right_motor = Motor('C')
 
 ###############################################################################
-# Other "helper" classes.
+#    SoundSystem
 ###############################################################################
-
-class Plug(object):
+class SoundSystem(object):
     """
-    A Plug on the EV3 brick:
-      either for input (1, 2, 3, 4) or for output (A, B, C, D).
+    Has all the kinds of "noise makers" available to the Snatch3r robot.
+    Use this object to make   ** any **   sounds.
     """
-    map_strings_to_ports = {
-        1: ev3.INPUT_1, 2: ev3.INPUT_2, 3: ev3.INPUT_3, 4: ev3.INPUT_4,
-        "1": ev3.INPUT_1, "2": ev3.INPUT_2, "3": ev3.INPUT_3, "4": ev3.INPUT_4,
-        "A": ev3.OUTPUT_A, "B": ev3.OUTPUT_B, "C": ev3.OUTPUT_C,
-        "D": ev3.OUTPUT_D
-    }
 
-    def __init__(self, plug_name):
-        """
-        The EV3 name for the given plug expressed as a string:
-          "1", "2", "3", "4", "A", "B", "C", or "D",
-        or as an integer (for inputs):  1, 2, 3 or 4.
-        The string can be upper or lower case (either is fine).
+    def __init__(self, beeper, tone_maker, speech_maker, song_maker):
+        self.beeper = beeper
+        self.tone_maker = tone_maker
+        self.speech_maker = speech_maker
+        self.song_maker = song_maker
 
-          :type plug_name: str | int
+
+###############################################################################
+###############################################################################
+# Classes built directly upon the underlying EV3 robot modules.
+# USE them, and AUGMENT them if you wish, but do NOT modify them.
+#
+# In the DriveSystem:
+#   -- Motor
+#
+# In the SoundSystem:
+#   -- Beeper
+#   -- ToneMaker
+#   -- SpeechMaker
+#   -- SongPlayer
+#
+###############################################################################
+###############################################################################
+class Motor(object):
+    def __init__(self, port, motor_type='large'):
+        # port must be 'A', 'B', 'C', or 'D'.  Use 'arm' as motor_type for Arm.
+        if motor_type == 'large':
+            self._motor = ev3.LargeMotor('out' + port)
+        elif motor_type == 'medium':
+            self._motor = ev3.MediumMotor('out' + port)
+
+    def turn_on(self, speed):
+        """ speed must be -100 to 100 """
+        self._motor.run_direct(duty_cycle_sp=speed)
+
+    def turn_off(self):
+        self._motor.stop(stop_action="brake")
+
+    def get_position(self):  # Units are degrees (that the motor has rotated).
+        return self._motor.position
+
+    def reset_position(self):
+        self._motor.position = 0
+
+
+class Beeper(object):
+    def __init__(self):
+        self._beeper = ev3.Sound
+
+    def beep(self):
         """
-        if type(plug_name) is str:
-            plug_name = plug_name.upper()
-        try:
-            self.port = Plug.map_strings_to_ports[plug_name]
-        except KeyError:
-            plug_names = "'1', '2', '3', '4', 'A', 'B', 'C', or 'D'."
-            raise KeyError("The Plug name must be one of: " + plug_names)
+        Starts playing a BEEP sound.
+
+        Does NOT block, that is, continues immediately to the next statement
+        while the sound is being played. Returns a subprocess.Popen,
+        so if you want the sound-playing to block until the sound is completed
+        (e.g. if the next statement will immediately make another sound),
+        then use   beep  like this:
+             beeper = Beeper()
+             beeper.beep().wait()
+
+        :rtype subprocess.Popen
+        """
+        return self._beeper.beep()
+
+
+class ToneMaker(object):
+    def __init__(self):
+        self._tone_maker = ev3.Sound
+
+    def play_tone(self, frequency, duration):
+        """
+        Starts playing a tone at the given frequency (in Hz) for the given
+        duration (in milliseconds).
+
+        Does NOT block, that is, continues immediately to the next statement
+        while the sound is being played. Returns a subprocess.Popen,
+        so if you want the sound-playing to block until the sound is completed
+        (e.g. if the next statement will immediately make another sound),
+        then use   tone  like this:
+             tone_player = ToneMaker()
+             tone_player.play_tone(400, 500).wait()
+
+        :rtype subprocess.Popen
+        """
+        return self._tone_maker.tone(frequency, duration)
+
+    def play_tone_sequence(self, tones):
+        """
+        Starts playing a sequence of tones, where each tone is a 3-tuple:
+          (frequency, duration, delay_until_next_tone_in_sequence)
+        Does NOT block; see   play_tone  above.
+
+        Here is a cheerful example, from the ev3 documentation::
+            tone_player = ToneMaker()
+            tone_player.play_tone_sequence([
+        (392, 350, 100), (392, 350, 100), (392, 350, 100), (311.1, 250, 100),
+        (466.2, 25, 100), (392, 350, 100), (311.1, 250, 100), (466.2, 25, 100),
+        (392, 700, 100), (587.32, 350, 100), (587.32, 350, 100),
+        (587.32, 350, 100), (622.26, 250, 100), (466.2, 25, 100),
+        (369.99, 350, 100), (311.1, 250, 100), (466.2, 25, 100),
+        (392, 700, 100),
+        (784, 350, 100), (392, 250, 100), (392, 25, 100), (784, 350, 100),
+        (739.98, 250, 100), (698.46, 25, 100), (659.26, 25, 100),
+        (622.26, 25, 100), (659.26, 50, 400), (415.3, 25, 200),
+        (554.36, 350, 100),
+        (523.25, 250, 100), (493.88, 25, 100), (466.16, 25, 100),
+        (440, 25, 100),
+        (466.16, 50, 400), (311.13, 25, 200), (369.99, 350, 100),
+        (311.13, 250, 100), (392, 25, 100), (466.16, 350, 100),
+        (392, 250, 100),
+        (466.16, 25, 100), (587.32, 700, 100), (784, 350, 100),
+        (392, 250, 100),
+        (392, 25, 100), (784, 350, 100), (739.98, 250, 100),
+        (698.46, 25, 100),
+        (659.26, 25, 100), (622.26, 25, 100), (659.26, 50, 400),
+        (415.3, 25, 200),
+        (554.36, 350, 100), (523.25, 250, 100), (493.88, 25, 100),
+        (466.16, 25, 100), (440, 25, 100), (466.16, 50, 400),
+        (311.13, 25, 200),
+        (392, 350, 100), (311.13, 250, 100), (466.16, 25, 100),
+        (392.00, 300, 150), (311.13, 250, 100), (466.16, 25, 100), (392, 700)
+        ]).wait()
+
+          :rtype subprocess.Popen
+        """
+        return self._tone_maker.tone(tones)
+
+
+class SpeechMaker(object):
+    def __init__(self):
+        self._speech_maker = ev3.Sound
+
+    def speak(self, phrase):
+        """
+        Speaks the given phrase aloud.
+        The phrase must be short.
+
+        Does NOT block, that is, continues immediately to the next statement
+        while the sound is being played. Returns a subprocess.Popen,
+        so if you want the sound-playing to block until the sound is completed
+        (e.g. if the next statement will immediately make another sound),
+        then use   speak  like this:
+             speech_player = SpeechMaker()
+             speech_player.speak().wait()
+
+        :type  phrase:  str
+        :rtype subprocess.Popen
+        """
+        return self._speech_maker.speak(phrase)

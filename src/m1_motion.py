@@ -15,41 +15,73 @@ their colleagues, and PUT_YOUR_NAME_HERE.
 import simple_rosebotics as rb
 import time
 
+
 def main():
     """ Calls the other functions to test/demo them. """
-    go_two_seconds()
+    print("Running main on the robot.")
+
+    # TODO: 2. Construct a RoseBot.  Send it as an argument to other functions.
+    run_test_spin()
+    run_test_go()
+    challenge1()
+    challenge2()
 
 
-def go_two_seconds():
+def run_test_spin(robot):
+    """
+    Tests the   spin   function, by making the robot spin several times,
+    for different amounts of time and with different speeds,
+    with   time.sleep(2)   between each run.
+      :type robot:  rb.RoseBot
+    """
     # -------------------------------------------------------------------------
-    # TODO: 3.
-    #   Make the robot move, by using this pattern:
-    #    - Turn on (start) the wheel motors.
-    #    - time.sleep(2)  # Pause here, let other processes run for 2 seconds
-    #    - Turn off (brake or coast) the wheel motors.
+    # TODO: 3. Implement this.
+    # -------------------------------------------------------------------------
+
+
+def spin(robot, seconds, speed):
+    """ :type robot: rb.RoseBot """
+    # -------------------------------------------------------------------------
+    # TODO: 4.
+    #   Makes the robot move, by using this pattern:
+    #    1. Turn on the wheel motors at the given speed but with:
+    #        -- LEFT wheel POSITIVE speed
+    #        -- RIGHT wheel NEGATIVE speed
+    #    2. time.sleep(seconds)  # Pause here, let other processes run
+    #    3. Turn off the wheel motors.
     #
-    # Use the DOT trick to figure out how to start, brake and coast motors.
+    # Use the DOT trick to figure out how to turn on and turn off motors.
     # -------------------------------------------------------------------------
-    left_motor = rb.LargeMotor(rb.Plug("B"))  # Constructs Motor for left wheel
-    left_motor.start()
-    time.sleep(2)
-    left_motor.brake()
 
 
-def run_test_go_inches():
-    """ Tests the go_inches function. """
-    # TODO: 4.  Implement this function with at least 3 calls to go_inches
-    #   with various inches and speeds.
-
-
-def go_inches(inches, percent_of_max_speed):
+def run_test_go(robot):
     """
-    Makes the EV3 Robot move the given number of inches at the given speed.
-
-      :type inches: float
-      :type percent_of_max_speed: float  -100 to 100
+    Tests the   go   function, by making the robot go several times,
+    for different amounts of time and with different speeds,
+    with   time.sleep(2)   between each run.
+      :type robot:  rb.RoseBot
     """
-    # TODO: 5.  Implement and test this function.
+    # -------------------------------------------------------------------------
+    # TODO: 3. Implement this.
+    # -------------------------------------------------------------------------
+
+
+
+def go(robot, seconds, left_wheel_speed, right_wheel_speed):
+    """ :type robot: rb.RoseBot """
+    # -------------------------------------------------------------------------
+    # TODO: 6.
+    #   Make the robot go, by using the pattern from SPIN function, except
+    #   using the given speeds for the left and right wheels, respectively.
+    # -------------------------------------------------------------------------
+
+
+def challenge1(robot):
+    """ Your instructor will tell you this challenge. """
+
+
+def challenge2(robot):
+    """ Your instructor will tell you this challenge. """
 
 
 main()

@@ -11,7 +11,8 @@ import simple_rosebotics as rb
 # ------------------------------------------------------------------------------
 # TODO: 2.  This is an   ** OPTIONAL **   exercise.
 #   Using the DOT trick, add code to  make_sounds  to make the robot
-#   make sounds in various ways:  Beep, Tone, Speech, Song.
+#   make sounds in various ways, using the instance variables of the robot's
+#   SOUND system.
 # ------------------------------------------------------------------------------
 def main():
     fun_song = [(392, 350, 100), (392, 350, 100), (392, 350, 100),
